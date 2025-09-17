@@ -1,6 +1,6 @@
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { INestApplication } from '@nestjs/common';
 
 async function bootstrap() {
   let app: INestApplication;
@@ -36,15 +36,15 @@ async function bootstrap() {
       console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
       await shutdown(app, 1);
     });
-    
+
     //-------------------------------------------------------------
 
+    app.useGlobalPipes(new ValidationPipe());
     app.setGlobalPrefix('/api/v1');
 
     const port = process.env.PORT ?? 3000;
     await app.listen(port);
     console.log(`🚀 Server is running on port ${port}`);
-
   } catch (error) {
     console.error(`❌ Error during server startup:`, error);
     process.exit(1);
@@ -63,7 +63,6 @@ async function shutdown(app: INestApplication, exitCode: number = 0) {
   }
   process.exit(exitCode);
 }
-
 
 (async () => {
   await bootstrap();
