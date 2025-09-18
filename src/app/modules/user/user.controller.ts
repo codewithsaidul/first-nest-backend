@@ -28,12 +28,14 @@ export class UserController {
   }
 
   @Patch(':id')
+  @ResponseMessage("User info updated successfully!")
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
+  @ResponseMessage("User Deleted Successfully!")
   remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+    return this.userService.remove(id);
   }
 }
