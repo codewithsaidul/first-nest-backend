@@ -79,8 +79,8 @@ export class UserService {
         name: true,
         email: true,
         createdAt: true,
-        updatedAt: true
-      }
+        updatedAt: true,
+      },
     });
 
     if (!user) {
@@ -90,7 +90,7 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-        const user = await this.prisma.users.findUnique({
+    const user = await this.prisma.users.findUnique({
       where: {
         id,
       },
@@ -100,7 +100,7 @@ export class UserService {
       throw new NotFoundException('Requested user does exist on database!');
     }
 
-    const updateUser = await this.prisma.users.update({ 
+    const updateUser = await this.prisma.users.update({
       where: { id },
       data: updateUserDto,
       select: {
@@ -108,13 +108,24 @@ export class UserService {
         name: true,
         email: true,
         createdAt: true,
-        updatedAt: true
-      }
-     })
+        updatedAt: true,
+      },
+    });
     return updateUser;
   }
 
   async remove(id: string) {
-    return `This action removes a #${id} user`;
+    const user = await this.prisma.users.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Requested user does exist on database!');
+    }
+
+    await this.prisma.users.delete({ where: { id }})
+    return null;
   }
 }
