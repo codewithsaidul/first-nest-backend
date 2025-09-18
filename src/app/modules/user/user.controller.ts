@@ -22,8 +22,9 @@ export class UserController {
   }
 
   @Get(':id')
+  @ResponseMessage("Single User Data retrive suuccessfully!")
   findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+    return this.userService.findOne(id);
   }
 
   @Patch(':id')
