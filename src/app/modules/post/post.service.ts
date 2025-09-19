@@ -8,8 +8,20 @@ export class PostService {
   constructor(private prisma: PrismaService) {}
 
 
-  create(createPostDto: CreatePostDto) {
-    return 'This action adds a new post';
+  async create(createPostDto: CreatePostDto) {
+    const post = await this.prisma.post.create({
+      data: createPostDto,
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    })
+    return post;
   }
 
   findAll() {
