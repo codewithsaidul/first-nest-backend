@@ -28,6 +28,7 @@ export class PostController {
   }
 
   @Patch(':id')
+  @ResponseMessage("Post updated successfully!")
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postService.update(id, updatePostDto);
   }

@@ -9,8 +9,6 @@ export class PostService {
   constructor(private prisma: PrismaService) {}
 
 
-  public Post = this.prisma.post
-
   async create(createPostDto: CreatePostDto) {
     const post = await this.prisma.post.create({
       data: createPostDto,
@@ -29,7 +27,7 @@ export class PostService {
 
   async findAll({ page = 1, limit = 10, search, isFeatured, tag, sortBy = 'createdAt', sortOrder = 'desc' }: FindAllPostQueryDto) {
     const skip = (page - 1) * limit;
-    const tags = tag ? tag.split(",") : undefined
+    const tags = tag ? tag.split(',') : undefined;
     const where: any = {
       AND: [
         search && {
@@ -40,8 +38,8 @@ export class PostService {
             },
           ],
         },
-        typeof isFeatured === "boolean" && { isFeatured },
-        (tags && tags.length > 0) && { tags: { hasEvery: tags }}
+        typeof isFeatured === 'boolean' && { isFeatured },
+        tags && tags.length > 0 && { tags: { hasEvery: tags } },
       ].filter(Boolean),
     };
 
@@ -54,16 +52,16 @@ export class PostService {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        }
+            email: true,
+          },
+        },
       },
       orderBy: {
-        [sortBy]: sortOrder
-      }
-    })
+        [sortBy]: sortOrder,
+      },
+    });
 
-    const total = await this.prisma.post.count({ where })
+    const total = await this.prisma.post.count({ where });
 
     return {
       data: posts,
@@ -71,22 +69,43 @@ export class PostService {
         page,
         limit,
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
   async findOne(id: string) {
-    const post = await this.Post.findUnique({ where: { id } } )
+    const post = await this.prisma.post.findUnique({ where: { id } });
 
     if (!post) {
-      throw new NotFoundException("This post is not avaiable in our db")
+      throw new NotFoundException('This post is not avaiable in our db');
     }
     return post;
   }
 
   async update(id: string, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+    const post = await this.prisma.post.findUnique({ where: { id } });
+
+    if (!post) {
+      throw new NotFoundException('This post is not avaiable in our db');
+    }
+
+    const updatedPost = await this.prisma.post.update({
+      where: {
+        id
+      },
+      data: updatePostDto,
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    })
+    return updatedPost;
   }
 
   async remove(id: string) {
