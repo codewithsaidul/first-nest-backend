@@ -78,6 +78,7 @@ export class UserService {
         id: true,
         name: true,
         email: true,
+        posts: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -115,17 +116,28 @@ export class UserService {
   }
 
   async remove(id: string) {
-    const user = await this.prisma.users.findUnique({
-      where: {
-        id,
-      },
+    await this.prisma.$transaction(async (tx) => {
+      const user = await tx.users.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('Requested user does exist on database!');
+      }
+
+
+      // delete user related post
+      await tx.post.deleteMany({
+        where: {
+          authorId: id
+        }
+      })
+
+
+      await tx.users.delete({ where: { id } });
     });
-
-    if (!user) {
-      throw new NotFoundException('Requested user does exist on database!');
-    }
-
-    await this.prisma.users.delete({ where: { id }})
     return null;
   }
 }
