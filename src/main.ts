@@ -42,7 +42,10 @@ async function bootstrap() {
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
-        whitelist: true
+        transformOptions: {
+          enableImplicitConversion: true, // ✅ এই অপশনটি 'true'/'false' স্ট্রিংকে বুলিয়ানে রূপান্তর করে
+        },
+        whitelist: true,
       }),
     );
     app.setGlobalPrefix('/api/v1');
