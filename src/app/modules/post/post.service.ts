@@ -8,7 +8,6 @@ import { FindAllPostQueryDto } from './dto/post.query.dto';
 export class PostService {
   constructor(private prisma: PrismaService) {}
 
-
   async create(createPostDto: CreatePostDto) {
     const post = await this.prisma.post.create({
       data: createPostDto,
@@ -92,7 +91,7 @@ export class PostService {
 
     const updatedPost = await this.prisma.post.update({
       where: {
-        id
+        id,
       },
       data: updatePostDto,
       include: {
@@ -100,15 +99,22 @@ export class PostService {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        }
-      }
-    })
+            email: true,
+          },
+        },
+      },
+    });
     return updatedPost;
   }
 
   async remove(id: string) {
-    return `This action removes a #${id} post`;
+    const post = await this.prisma.post.findUnique({ where: { id } });
+
+    if (!post) {
+      throw new NotFoundException('This post is not avaiable in our db');
+    }
+
+    await this.prisma.post.delete({ where: { id } } )
+    return null;
   }
 }

@@ -34,6 +34,7 @@ export class PostController {
   }
 
   @Delete(':id')
+  @ResponseMessage('Post deleted successffully!')
   remove(@Param('id') id: string) {
     return this.postService.remove(id);
   }
