@@ -18,14 +18,11 @@ export class PostController {
   @Get()
   @ResponseMessage("Posts retrived successfully!")
   findAll(@Query() query: FindAllPostQueryDto) {
-    // const mainQuery = {
-    //   ...query,
-    //   tags
-    // }
     return this.postService.findAll(query);
   }
 
   @Get(':id')
+  @ResponseMessage("Post Details Retrived successfully!")
   findOne(@Param('id') id: string) {
     return this.postService.findOne(id);
   }

@@ -1,5 +1,5 @@
 import { PrismaService } from './../../../prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FindAllPostQueryDto } from './dto/post.query.dto';
@@ -7,6 +7,9 @@ import { FindAllPostQueryDto } from './dto/post.query.dto';
 @Injectable()
 export class PostService {
   constructor(private prisma: PrismaService) {}
+
+
+  public Post = this.prisma.post
 
   async create(createPostDto: CreatePostDto) {
     const post = await this.prisma.post.create({
@@ -74,7 +77,12 @@ export class PostService {
   }
 
   async findOne(id: string) {
-    return `This action returns a #${id} post`;
+    const post = await this.Post.findUnique({ where: { id } } )
+
+    if (!post) {
+      throw new NotFoundException("This post is not avaiable in our db")
+    }
+    return post;
   }
 
   async update(id: string, updatePostDto: UpdatePostDto) {
